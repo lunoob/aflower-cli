@@ -11,3 +11,7 @@
 // msgList.forEach(msg => {
 //     console.log(msg)
 // })
+
+export default () => {
+  console.log('hello')
+}
