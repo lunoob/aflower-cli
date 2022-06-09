@@ -1,0 +1,31 @@
+{
+  "name": "aflower",
+  "version": "1.0.0",
+  "description": "一枝花项目工程化工具脚手架",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lunoob/aflower-cli.git"
+  },
+  "keywords": ["一枝花", "脚手架", "工程化"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lunoob/aflower-cli/issues"
+  },
+  "homepage": "https://github.com/lunoob/aflower-cli#readme",
+  "bin": "bin/enter",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.0.1",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "typescript": "^4.7.3"
+  }
+}
