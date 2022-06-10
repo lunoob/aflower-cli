@@ -1,11 +1,12 @@
 {
-  "name": "aflower",
-  "version": "1.0.0",
-  "description": "一枝花项目工程化工具脚手架",
+  "name": "aflower-cli",
+  "version": "0.0.1",
+  "description": "one flower project command line interface",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "upload": "npm publish --access public"
   },
   "repository": {
     "type": "git",
@@ -14,7 +15,10 @@
   "keywords": [
     "一枝花",
     "脚手架",
-    "工程化"
+    "工程化",
+    "cli",
+    "command",
+    "flower"
   ],
   "author": "",
   "license": "ISC",
@@ -36,5 +40,8 @@
   },
   "dependencies": {
     "commander": "^9.3.0"
-  }
+  },
+  "files": [
+      "lib"
+  ]
 }
