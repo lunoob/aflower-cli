@@ -7,6 +7,6 @@ export { default as Add } from './add'
 export function Fail (command: any | string, args: string) {
   return () => {
     console.log(`${command} option is not exist`)
-    console.log('Run "aflower-cli --help" for more info')
+    console.log('Run "aflower --help" for more info')
   }
 }
