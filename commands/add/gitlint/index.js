@@ -126,7 +126,7 @@ function checkDependencies () {
 
     // 交集
     const crossDependencies = intersection(allDependencies, needInstallDependencies)
-    const isAllInstall = difference(crossDependencies, needInstallDependencies).length === 0
+    const isAllInstall = difference(needInstallDependencies, crossDependencies).length === 0
 
     if (!isAllInstall) {
         // 暂时先不开启新的进程去自动安装
