@@ -145,6 +145,6 @@ module.exports = async function () {
         commitizen()
         husky()
     } catch (error) {
-        console.log('occur error: ', error.message)
+        console.log(error.message)
     }
 }

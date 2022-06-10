@@ -1,6 +1,6 @@
 {
     "name": "aflower-cli",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "one flower project command line interface",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
