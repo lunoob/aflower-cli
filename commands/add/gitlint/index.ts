@@ -1,3 +1,5 @@
+import packageJson from '../../../package.json'
+
 // 检测 package.json 是否安装了这些依赖
 // 如果都安装了才进行脚本命令
 
@@ -13,5 +15,5 @@
 // })
 
 export default () => {
-  console.log('hello')
+  console.log(packageJson)
 }
