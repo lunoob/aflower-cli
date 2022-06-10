@@ -1,26 +1,27 @@
 #! /usr/bin/env node
-import gitlint from '../gitlint'
+import fse from 'fs-extra'
+import path from 'path'
+import { Add, Fail } from '../commands'
 import { Command } from 'commander'
 
-const commandHandle: Record<string, () => void> = {
-  gitlint
-}
+const packageJsonPath = path.resolve(__dirname, '../../package.json')
+const packageJson = fse.readJsonSync(packageJsonPath)
 
 const program = new Command()
 
 program
   .name('aflower')
   .usage('<command> [option]')
-  .version('0.0.1', '-v --version')
+  .version(packageJson.version, '-v --version')
 
 program
   .command('add <tool-config>')
   .description('add tool configuration to the project')
-  .action((toolType: string) => {
+  .action((toolType: keyof typeof Add, args: string) => {
     // 处理用户输入 add 指令附加的参数
 
     (
-      commandHandle[toolType] || (() => {})
+      Add[toolType] || Fail(toolType, args)
     )()
   })
 
