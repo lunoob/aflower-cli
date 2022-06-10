@@ -52,7 +52,7 @@ function lintstage () {
         content = {}
     }
     // @ts-ignore
-    content['*.{js,ts,tsx,vue}'] = ['eslint --fix']
+    content['*.{js,ts}'] = ['eslint --fix']
 
     fse.writeJsonSync(filePath, content, { spaces: 4 })
     console.log('lintstaged - config created\n')
