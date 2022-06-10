@@ -12,7 +12,7 @@ program
 
 program
     .command('add <tool-config>')
-    .description('add tool configuration to the project')
+    .description('add tool configuration to the project GitLint')
     .action((toolType, args) => {
         (
             Add[toolType] || Fail(toolType, args)

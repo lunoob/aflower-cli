@@ -120,8 +120,8 @@ function checkDependencies () {
     const packageJson = require(path.resolve(basePath, 'package.json'))
 
     const allDependencies = [
-        ...Object.keys(packageJson.devDependencies),
-        ...Object.keys(packageJson.dependencies)
+        ...Object.keys(packageJson.devDependencies || {}),
+        ...Object.keys(packageJson.dependencies || {})
     ]
 
     // 交集
