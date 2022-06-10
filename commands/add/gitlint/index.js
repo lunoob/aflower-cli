@@ -133,14 +133,13 @@ function checkDependencies () {
         // 直接提示安装, 提示安装缺少的依赖
         const missDependencies = difference(needInstallDependencies, crossDependencies)
         console.log('The following dependencies need to be installed first:')
-        return console.log(missDependencies.join(' '))
+        throw new Error(missDependencies.join(' '))
     }
 }
 
 module.exports = async function () {
-    checkDependencies()
-
     try {
+        checkDependencies()
         lintstage()
         commitlint()
         commitizen()
