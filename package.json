@@ -1,6 +1,6 @@
 {
   "name": "aflower",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "一枝花项目工程化工具脚手架",
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "脚手架",
     "工程化"
   ],
-  "author": "",
+  "author": "luoob",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/lunoob/aflower-cli/issues"
