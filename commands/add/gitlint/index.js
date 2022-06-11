@@ -1,7 +1,23 @@
+/**
+* @fileoverview gitlint config module
+* @author Luoob
+*/
+
+// ------------------------------------------------------------------------------
+// Requirements
+// ------------------------------------------------------------------------------
+
 const path = require('path')
 const fse = require('fs-extra')
 const { exec } = require('child_process')
 const { intersection, difference } = require('lodash')
+const { findPackageJson, installSyncSaveDev } = require('../../../helpers/npm_utils')
+const { info, light } = require('../../../helpers/logging')
+const { prompt } = require('enquirer')
+
+// ------------------------------------------------------------------------------
+// Variables
+// ------------------------------------------------------------------------------
 
 const needInstallDependencies = [
     'commitizen',
@@ -9,6 +25,10 @@ const needInstallDependencies = [
     'lint-staged',
     '@commitlint/config-conventional'
 ]
+
+// ------------------------------------------------------------------------------
+// Helpers
+// ------------------------------------------------------------------------------
 
 // husky
 function husky () {
@@ -98,53 +118,92 @@ async function commitlint () {
 // commitizen
 function commitizen () {
     const filePath = path.resolve(process.cwd(), 'package.json')
-    const package = require(filePath)
+    const pkg = require(filePath)
 
-    if (package.config == null) {
-        package.config = {}
+    if (pkg.config == null) {
+        pkg.config = {}
     }
-    if (package.config.commitizen == null) {
-        package.config.commitizen = {}
+    if (pkg.config.commitizen == null) {
+        pkg.config.commitizen = {}
     }
-    package.config.commitizen.path = 'cz-conventional-changelog'
+    pkg.config.commitizen.path = 'cz-conventional-changelog'
 
-    fse.writeJsonSync(filePath, package, { spaces: 4 })
+    fse.writeJsonSync(filePath, pkg, { spaces: 4 })
     console.log('commitizen - config created\n')
 }
 
-// checkDependencies
-function checkDependencies () {
-    // 获取进程工作区
-    const basePath = process.cwd()
-    // 获取 package.json 内容
-    const packageJson = require(path.resolve(basePath, 'package.json'))
+/**
+ * Whether automatic installation is required
+ * Package manager used in the current project: npm, yarn or pnpm
+ * @returns {Promise<{ auto: boolean, manager: 'npm' | 'yarn' | 'pnpm' }>}
+ */
+function installPrompt () {
+    return prompt([
+        {
+            type: 'toggle',
+            name: 'auto',
+            message: 'Install the following dependencies now?',
+            enabled: 'Yes',
+            disabled: 'No',
+            initial: 1
+        },
+        {
+            type: 'select',
+            name: 'manager',
+            message: 'Which package manager are used?',
+            choices: ['npm', 'yarn', 'pnpm'],
+            skip () {
+                return !this.state.answers.auto
+            }
+        }
+    ]).catch(() => {})
+}
+
+/**
+ * check the gitlint peerDependences
+ * @returns {void}
+ */
+async function checkDependencies () {
+    const pkgJSONPath = findPackageJson()
+    const pkgJSONContent = fse.readJsonSync(pkgJSONPath, { encoding: 'utf8' })
 
     const allDependencies = [
-        ...Object.keys(packageJson.devDependencies || {}),
-        ...Object.keys(packageJson.dependencies || {})
+        ...Object.keys(pkgJSONContent.devDependencies || {}),
+        ...Object.keys(pkgJSONContent.dependencies || {})
     ]
 
-    // 交集
+    // find the cross
     const crossDependencies = intersection(allDependencies, needInstallDependencies)
     const isAllInstall = difference(needInstallDependencies, crossDependencies).length === 0
 
     if (!isAllInstall) {
-        // 暂时先不开启新的进程去自动安装
-        // 直接提示安装, 提示安装缺少的依赖
-        const missDependencies = difference(needInstallDependencies, crossDependencies)
-        console.log('The following dependencies need to be installed first:')
-        throw new Error(missDependencies.join(' '))
+        const modules = difference(needInstallDependencies, crossDependencies)
+        info('The following dependencies need to be installed first:')
+        light(modules.join(' '))
+
+        const result = await installPrompt()
+        if (result && result.auto) {
+            const installResult = installSyncSaveDev(modules, result.manager)
+            if (!installResult) {
+                throw new Error()
+            }
+        }
+
+        throw new Error(
+            'Please manually complete the installation of dependencies'
+        )
     }
 }
 
 module.exports = async function () {
     try {
-        checkDependencies()
+        await checkDependencies()
         lintstage()
         commitlint()
         commitizen()
         husky()
     } catch (error) {
-        console.log(error.message)
+        info()
+        info(error.message)
     }
 }

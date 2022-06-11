@@ -11,8 +11,8 @@ program
     .version(packageJson.version, '-v --version')
 
 program
-    .command('add <tool-config>')
-    .description('add tool configuration to the project GitLint')
+    .command('add <config>')
+    .description('add tool configuration like: GitLint')
     .action((toolType, args) => {
         (
             Add[toolType] || Fail(toolType, args)
