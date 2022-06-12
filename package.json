@@ -1,6 +1,6 @@
 {
     "name": "aflower-cli",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "description": "One flower project command line interface.",
     "scripts": {
         "command": "node bin/aflower.js",
