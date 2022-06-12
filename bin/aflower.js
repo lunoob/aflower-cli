@@ -15,8 +15,8 @@ program
 
 program
     .command('add <config>')
-    .description(`add tool configuration\neg: ${
-        colors.primary(Object.keys(Add).join('、'))
+    .description(`add tool configuration\nsupport: ${
+        colors.primary(Object.keys(Add).join(' '))
     }`)
     .action((toolType, args) => {
         (

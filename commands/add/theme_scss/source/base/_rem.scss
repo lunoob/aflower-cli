@@ -1,0 +1,15 @@
+html {
+    font-size: $normal-font-size;
+}
+
+@media screen and (max-width: 512px) {
+    html {
+        // 影响范围： 375px(15px) - 512px(18px)
+        // 375px 尺寸 作为 15px 基准
+        // 512px 尺寸 作为 18px 基准
+        // 512px - 375px = 137px
+        font-size: calc(93.75% + 3 * (100vw - 375px) / 137);
+        // 以下为兼容其他浏览器
+        font-size: calc(15px + 3 * (100vw - 375px) / 137);
+    }
+}

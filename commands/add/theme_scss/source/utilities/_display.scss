@@ -1,0 +1,27 @@
+// 响应式 display 工具类
+// .d-{value} for xs
+// .d-{breakpoint}-{value} for sm, md, lg, xl, and xxl.
+
+$display-list: none, inline, inline-block, block, flex, inline-flex;
+
+@mixin create-display($name: null) {
+    @each $type in $display-list {
+        @if $name == null {
+            .d-#{$type} {
+                display: $type;
+            }
+        } @else {
+            .d-#{$name}-#{$type} {
+                display: $type;
+            }
+        }
+    }
+}
+
+@include create-display();
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+    @include breakpoint-up($breakpoint) {
+        @include create-display($breakpoint)
+    }
+}

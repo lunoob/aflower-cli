@@ -1,0 +1,31 @@
+/// flex拉伸
+@mixin flex-spread {
+    flex: 1;
+    width: 0;
+}
+
+/// 生成相邻选择器
+/// @param  {string}  $sel
+@mixin brother($sel: &) {
+    & + #{$sel} {
+        @content;
+    }
+}
+
+/// 使用 before 伪类对元素进行垂直居中
+@mixin useBeforeMiddle {
+    &::before {
+        content: '';
+        height: 100%;
+        display: inline-block;
+        vertical-align: middle;
+    }
+}
+
+/// hover feedback
+@mixin hover {
+    &:hover {
+        opacity: 0.7;
+        @content;
+    }
+}

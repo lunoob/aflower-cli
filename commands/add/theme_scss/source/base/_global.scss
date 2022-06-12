@@ -1,0 +1,9 @@
+// 存放全局样式，包括 css 变量，通用的 css 规则
+
+body {
+    --nav-header-height: 65px;
+    --side-menu-width: 220px;
+    --min-content-width: 1250px;
+    --max-content-width: 1440px;
+    --max-container-width: 1200px;
+}

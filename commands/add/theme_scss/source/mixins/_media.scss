@@ -1,0 +1,31 @@
+// 响应式断点 Mixins
+
+$default-breakpoint: 'sm';
+
+// 宽度 >= 断点对应的宽度
+@mixin breakpoint-up($name: $default-breakpoint) {
+    $breakpoint: map-get($grid-breakpoints, $name);
+    @if $breakpoint == null {
+        @media screen and (max-width: $name) {
+            @content;
+        }
+    } @else {
+        @media screen and (min-width: $breakpoint) {
+            @content;
+        }
+    }
+}
+
+// 宽度 <= 断点对应的宽度
+@mixin breakpoint-down($name: $default-breakpoint) {
+    $breakpoint: map-get($grid-breakpoints, $name);
+    @if $breakpoint == null {
+        @media screen and (max-width: $name) {
+            @content;
+        }
+    } @else {
+        @media screen and (max-width: $breakpoint) {
+            @content;
+        }
+    }
+}
