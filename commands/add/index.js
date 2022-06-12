@@ -4,7 +4,9 @@
 */
 
 import GitLint from './gitlint/index.js'
+import Service from './service/index.js'
 
 export default {
-    GitLint
+    GitLint,
+    Service
 }

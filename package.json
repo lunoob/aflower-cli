@@ -33,6 +33,8 @@
     "homepage": "https://github.com/lunoob/aflower-cli#readme",
     "devDependencies": {
         "@commitlint/config-conventional": "^17.0.2",
+        "@typescript-eslint/eslint-plugin": "^5.27.1",
+        "@typescript-eslint/parser": "^5.27.1",
         "commitizen": "^4.2.4",
         "eslint": "^8.0.1",
         "eslint-config-standard": "^17.0.0",
@@ -40,7 +42,8 @@
         "eslint-plugin-n": "^15.0.0",
         "eslint-plugin-promise": "^6.0.0",
         "husky": "^8.0.1",
-        "lint-staged": "^13.0.1"
+        "lint-staged": "^13.0.1",
+        "typescript": "^4.7.3"
     },
     "dependencies": {
         "chalk": "4.1.2",
