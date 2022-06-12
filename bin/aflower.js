@@ -1,7 +1,8 @@
 #! /usr/bin/env node
-import { Add, Fail } from '../commands/index.js'
 import { Command } from 'commander'
 import { createRequire } from 'module'
+import { Add, Fail } from '../commands/index.js'
+import * as colors from '../helpers/colors.js'
 
 const require = createRequire(import.meta.url)
 const program = new Command()
@@ -14,7 +15,9 @@ program
 
 program
     .command('add <config>')
-    .description('add tool configuration like: GitLint')
+    .description(`add tool configuration\neg: ${
+        colors.primary(Object.keys(Add).join('、'))
+    }`)
     .action((toolType, args) => {
         (
             Add[toolType] || Fail(toolType, args)
