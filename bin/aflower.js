@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+import figlet from 'figlet'
 import { Command } from 'commander'
 import { createRequire } from 'module'
 import { Add, Fail } from '../commands/index.js'
@@ -23,5 +24,12 @@ program
             Add[toolType] || Fail(toolType, args)
         )()
     })
+
+program.addHelpText(
+    'before',
+    colors.primary(
+        figlet.textSync('AFlower')
+    ) + '\r\n'
+)
 
 program.parse(process.argv)
