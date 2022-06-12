@@ -1,5 +1,5 @@
 /**
-* @fileoverview gitlint config module
+* @fileoverview Gitlint config module
 * @author Luoob
 */
 
@@ -7,17 +7,21 @@
 // Requirements
 // ------------------------------------------------------------------------------
 
-const path = require('path')
-const fse = require('fs-extra')
-const { exec } = require('child_process')
-const { intersection, difference } = require('lodash')
-const { findPackageJson, installSyncSaveDev } = require('../../../helpers/npm_utils')
-const { info, light } = require('../../../helpers/logging')
-const { prompt } = require('enquirer')
+import path from 'path'
+import fse from 'fs-extra'
+import stringify from 'json-stable-stringify-without-jsonify'
+import ora from 'ora'
+import { exec } from 'child_process'
+import { createRequire } from 'module'
+import { intersection, difference } from 'lodash-es'
+import { findPackageJson, installSyncSaveDev } from '../../../helpers/npm_utils.js'
+import { formatByEslint } from '../../../helpers/lint.js'
+import * as log from '../../../helpers/logging.js'
+import * as colors from '../../../helpers/colors.js'
 
-// ------------------------------------------------------------------------------
-// Variables
-// ------------------------------------------------------------------------------
+const require = createRequire(import.meta.url)
+const cwd = process.cwd()
+const { prompt } = require('enquirer')
 
 const needInstallDependencies = [
     'commitizen',
@@ -26,110 +30,118 @@ const needInstallDependencies = [
     '@commitlint/config-conventional'
 ]
 
+const configFiles = {
+    lintstage: '.lintstagedrc.json',
+    commitlint: 'commitlint.config.cjs',
+    pkg: 'package.json'
+}
+
 // ------------------------------------------------------------------------------
 // Helpers
 // ------------------------------------------------------------------------------
 
-// husky
+/**
+ * Add husky config and git hook
+ * @returns {any}
+ */
 function husky () {
+    const spinner = ora('Husky Configuring\n').start()
     // 1. 增加 npm script 命令 "prepare": "husky install"
     // 2. 增加 husky 钩子
     const commands = [
         'npm set-script prepare "husky install"',
         'npm set-script cz "git-cz"',
-        'npm set-script check "lint-staged"',
         'npx husky install',
-        'npx husky add .husky/pre-commit "npm run check"',
-        'npx husky add .husky/commit-msg "npx commitlint -e"'
+        'npx husky set .husky/pre-commit "npx lint-staged"',
+        'npx husky set .husky/commit-msg "npx commitlint -e"'
     ]
     return new Promise((resolve, reject) => {
         const subprocess = exec(commands.join(' && '))
 
-        subprocess.stdout?.on('data', data => {
-            console.log(data)
-        })
-
-        subprocess.stderr?.on('data', data => {
+        subprocess.stderr.on('data', data => {
             reject(data)
         })
 
         subprocess.on('exit', () => {
+            spinner.stop()
             resolve('')
         })
     })
 }
 
-// lintstage
-function lintstage () {
-    // 先判断是否存在这个文件
-    const filePath = path.resolve(process.cwd(), '.lintstagedrc.json')
-    fse.ensureFileSync(filePath)
+/**
+ * Add lint-stage config
+ * @returns {any}
+ */
+async function lintstage () {
+    const lintStagePath = path.resolve(cwd, configFiles.lintstage)
 
-    let content = ''
-    try {
-        content = fse.readJsonSync(filePath)
-    } catch {
-        content = {}
+    let content = {}
+
+    // whether exist
+    if (fse.existsSync(lintStagePath)) {
+        content = fse.readJsonSync(lintStagePath)
     }
-    // @ts-ignore
     content['*.{js,ts}'] = ['eslint --fix']
 
-    fse.writeJsonSync(filePath, content, { spaces: 4 })
-    console.log('lintstaged - config created\n')
+    fse.writeJsonSync(lintStagePath, content, { spaces: 4 })
+    log.info(`✅ ${colors.success('lintstaged')} config created`)
 }
 
-// commitlint
+/**
+ * Add commitlint config
+ * @returns {any}
+ */
 async function commitlint () {
-    // 先判断是否存在这个文件
-    const filePath = path.resolve(process.cwd(), 'commitlint.config.js')
-    fse.ensureFileSync(filePath)
+    const filePath = path.resolve(cwd, configFiles.commitlint)
 
-    const module = 'module.exports = '
-    let content = ''
+    let content = {}
 
-    try {
-        content = require(filePath)
-    } catch {
-        console.log('error')
+    // whether exist
+    if (fse.existsSync(filePath)) {
+        content = (await import(filePath)).default
     }
 
-    const isEmpty = Object.keys(content).length === 0
-
-    if (isEmpty) {
-        content = module
-        const config = {
+    // if a empty obj
+    if (Object.keys(content).length === 0) {
+        content = {
             extends: ['@commitlint/config-conventional']
         }
-        content += JSON.stringify(config)
     } else {
-        // 判断 extends 是否存在
-        if (content.extends != null) {
+        // if extends attribute not exist
+        if (!content.extends) {
+            content.extends = ['@commitlint/config-conventional']
+        } else {
             const extendsSet = new Set(content.extends)
             extendsSet.add('@commitlint/config-conventional')
             content.extends = [...extendsSet.values()]
         }
-        content = module + JSON.stringify(content)
     }
+
+    content = `module.exports = ${stringify(content, { space: 4 })}`
 
     fse.writeFileSync(filePath, content, 'utf-8')
-    console.log('commitlint - config created\n')
+    log.info(`✅ ${colors.success('commitlint')} config created`)
 }
 
-// commitizen
+/**
+ * Add commitlint config
+ * @returns {any}
+ */
 function commitizen () {
-    const filePath = path.resolve(process.cwd(), 'package.json')
-    const pkg = require(filePath)
+    const packagePath = findPackageJson()
+    const packageContent = fse.readJsonSync(packagePath, { encoding: 'utf-8' })
 
-    if (pkg.config == null) {
-        pkg.config = {}
+    if (packageContent.config == null) {
+        packageContent.config = {}
     }
-    if (pkg.config.commitizen == null) {
-        pkg.config.commitizen = {}
+    if (packageContent.config.commitizen == null) {
+        packageContent.config.commitizen = {}
     }
-    pkg.config.commitizen.path = 'cz-conventional-changelog'
+    packageContent.config.commitizen.path = 'cz-conventional-changelog'
 
-    fse.writeJsonSync(filePath, pkg, { spaces: 4 })
-    console.log('commitizen - config created\n')
+    fse.writeJsonSync(packagePath, packageContent, { spaces: 4, encoding: 'utf-8' })
+    log.info(`✅ ${colors.success('commitizen')} config created`)
 }
 
 /**
@@ -160,12 +172,24 @@ function installPrompt () {
 }
 
 /**
+ * Splice path from filename
+ * @param {string[] | string} files
+ * @returns {any}
+ */
+function splicePath (files) {
+    files = Array.isArray(files) ? files : [files]
+    return files.map(
+        filename => path.resolve(cwd, filename)
+    )
+}
+
+/**
  * check the gitlint peerDependences
  * @returns {void}
  */
 async function checkDependencies () {
     const pkgJSONPath = findPackageJson()
-    const pkgJSONContent = fse.readJsonSync(pkgJSONPath, { encoding: 'utf8' })
+    const pkgJSONContent = fse.readJsonSync(pkgJSONPath, { encoding: 'utf-8' })
 
     const allDependencies = [
         ...Object.keys(pkgJSONContent.devDependencies || {}),
@@ -178,8 +202,8 @@ async function checkDependencies () {
 
     if (!isAllInstall) {
         const modules = difference(needInstallDependencies, crossDependencies)
-        info('The following dependencies need to be installed first:')
-        light(modules.join(' '))
+        log.info('The following dependencies need to be installed first:')
+        log.primary(modules.join(' '))
 
         const result = await installPrompt()
         if (result && result.auto) {
@@ -195,15 +219,16 @@ async function checkDependencies () {
     }
 }
 
-module.exports = async function () {
+export default async function () {
     try {
         await checkDependencies()
         lintstage()
         commitlint()
         commitizen()
-        husky()
+        await husky()
+        formatByEslint(splicePath(configFiles.commitlint))
     } catch (error) {
-        info()
-        info(error.message)
+        log.info()
+        log.info(error.message)
     }
 }

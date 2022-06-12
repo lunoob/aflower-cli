@@ -5,8 +5,7 @@
     "scripts": {
         "command": "node bin/aflower.js",
         "prepare": "husky install",
-        "cz": "git-cz",
-        "check": "lint-staged"
+        "cz": "git-cz"
     },
     "bin": {
         "aflower": "bin/aflower.js"
@@ -49,11 +48,14 @@
         "cross-spawn": "^7.0.3",
         "enquirer": "^2.3.6",
         "fs-extra": "^10.1.0",
-        "lodash": "^4.17.21"
+        "json-stable-stringify-without-jsonify": "^1.0.1",
+        "lodash-es": "^4.17.21",
+        "ora": "^6.1.0"
     },
     "config": {
         "commitizen": {
             "path": "cz-conventional-changelog"
         }
-    }
+    },
+    "type": "module"
 }

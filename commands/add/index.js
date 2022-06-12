@@ -1,11 +1,10 @@
 /**
-* @Author: luoob
-* @Last Modified by: luoob
-* @Introduction: add 命令统一导出模块
+* @fileoverview Unified export add command module
+* @author Luoob
 */
 
-const GitLint = require('./gitlint')
+import GitLint from './gitlint/index.js'
 
-module.exports = {
+export default {
     GitLint
 }

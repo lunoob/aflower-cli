@@ -7,7 +7,7 @@
 // Requirements
 // ------------------------------------------------------------------------------
 
-const chalk = require('chalk')
+import * as colors from './colors.js'
 
 // ------------------------------------------------------------------------------
 // Utilies
@@ -27,8 +27,8 @@ function info (...args) {
  * @param {...any} args The elements to log.
  * @returns {void}
  */
-function light (...args) {
-    console.log(chalk.rgb(17, 168, 205)(...args))
+function primary (...args) {
+    console.log(colors.primary(...args))
 }
 
 /**
@@ -37,11 +37,21 @@ function light (...args) {
  * @returns {void}
  */
 function error (...args) {
-    console.error(...args)
+    console.log(colors.error(...args))
 }
 
-module.exports = {
+/**
+ * success log
+ * @param {...any} args The elements to log.
+ * @returns {void}
+ */
+function success (...args) {
+    console.log(colors.success(...args))
+}
+
+export {
     info,
     error,
-    light
+    primary,
+    success
 }

@@ -7,10 +7,10 @@
 // Requirements
 // ------------------------------------------------------------------------------
 
-const path = require('path')
-const fs = require('fs')
-const spawn = require('cross-spawn')
-const log = require('./logging')
+import path from 'path'
+import fs from 'fs'
+import spawn from 'cross-spawn'
+import * as log from './logging.js'
 
 // ------------------------------------------------------------------------------
 // Helpers
@@ -64,7 +64,7 @@ function installSyncSaveDev (packages, packageManager = 'npm') {
     return true
 }
 
-module.exports = {
-    findPackageJson,
-    installSyncSaveDev
+export {
+    installSyncSaveDev,
+    findPackageJson
 }

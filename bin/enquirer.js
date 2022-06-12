@@ -1,4 +1,4 @@
-const enquirer = require('enquirer')
+import enquirer from 'enquirer'
 
 enquirer
     .prompt([

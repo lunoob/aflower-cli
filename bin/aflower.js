@@ -1,9 +1,11 @@
 #! /usr/bin/env node
-const packageJson = require('../package.json')
-const { Add, Fail } = require('../commands')
-const { Command } = require('commander')
+import { Add, Fail } from '../commands/index.js'
+import { Command } from 'commander'
+import { createRequire } from 'module'
 
+const require = createRequire(import.meta.url)
 const program = new Command()
+const packageJson = require('../package.json')
 
 program
     .name('aflower')

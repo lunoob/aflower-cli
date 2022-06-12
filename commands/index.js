@@ -1,9 +1,22 @@
-const Add = require('./add')
+/**
+* @fileoverview Unified export modules
+* @author Luoob
+*/
+
+// ------------------------------------------------------------------------------
+// Requirements
+// ------------------------------------------------------------------------------
+
+import Add from './add/index.js'
+
+// ------------------------------------------------------------------------------
+// Helpers
+// ------------------------------------------------------------------------------
 
 /**
- * 执行不存在或错误的命令
- * @param {any} command 命令
- * @param {any} args    参数
+ * Execute a command that does not exist or is incorrect
+ * @param {any} command command name
+ * @param {any} args    command arguments
  * @returns {() => void}
  */
 function Fail (command, args) {
@@ -13,7 +26,7 @@ function Fail (command, args) {
     }
 }
 
-module.exports = {
+export {
     Add,
     Fail
 }
